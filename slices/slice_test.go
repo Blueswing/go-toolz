@@ -9,6 +9,39 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+func TestAll(t *testing.T) {
+	res := All()
+	assert.True(t, res)
+	res = All(true)
+	assert.True(t, res)
+	res = All(true, false)
+	assert.False(t, res)
+}
+
+func TestAny(t *testing.T) {
+	res := Any()
+	assert.False(t, res)
+	res = Any(true)
+	assert.True(t, res)
+	res = Any(true, false)
+	assert.True(t, res)
+	res = Any(false, false)
+	assert.False(t, res)
+}
+
+func TestChunk(t *testing.T) {
+	data := []int{1, 2, 3, 4, 5, 6, 7, 8}
+	res := Chunk(data, 3)
+	assert.Equal(t, 3, len(res))
+}
+
+func TestConcat(t *testing.T) {
+	data := [][]int{{1, 2, 3}, {4, 5, 6}, {7, 8}}
+	res := Concat(data)
+	assert.Equal(t, 8, len(res))
+
+}
+
 func TestSum(t *testing.T) {
 	ints := []int{1, 2, 3, 4, 5}
 	intRes := Sum(ints)
@@ -51,9 +84,9 @@ func TestContains(t *testing.T) {
 	assert.False(t, ok, "expect false")
 }
 
-func TestAccumulate(t *testing.T) {
+func TestReduce(t *testing.T) {
 	s := []int{1, 2, 3, 4, 5}
-	res := Accumulate(0, s, func(x, y int) int { return x + y })
+	res := Reduce(s, func(x, y int) int { return x + y }, 0)
 	assert.Equal(t, 15, res)
 }
 

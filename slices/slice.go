@@ -4,7 +4,7 @@ import (
 	"github.com/yeefea/go-toolz/defs"
 )
 
-// All
+// All returns true if all elements in seq are true or if seq is empty
 func All(seq ...bool) bool {
 	for _, x := range seq {
 		if !x {
@@ -14,17 +14,17 @@ func All(seq ...bool) bool {
 	return true
 }
 
-// AllFunc
-func AllFunc[T any](pred defs.UnaryPred[T], seq ...T) bool {
-	for _, x := range seq {
-		if !pred(x) {
+// AllPredicates returns true if all predicates in preds true or if preds is empty
+func AllPredicates[T any](val T, preds ...defs.UnaryPred[T]) bool {
+	for _, f := range preds {
+		if !f(val) {
 			return false
 		}
 	}
 	return true
 }
 
-// Any
+// Any returns false if all elements in seq are false or if seq is empty
 func Any(seq ...bool) bool {
 	for _, x := range seq {
 		if x {
@@ -34,10 +34,10 @@ func Any(seq ...bool) bool {
 	return false
 }
 
-// AnyFunc
-func AnyFunc[T any](pred defs.UnaryPred[T], seq ...T) bool {
-	for _, x := range seq {
-		if pred(x) {
+// AnyFunc returns false if all predicates in preds returns false or if preds is empty
+func AnyPredicates[T any](val T, preds ...defs.UnaryPred[T]) bool {
+	for _, f := range preds {
+		if f(val) {
 			return true
 		}
 	}
@@ -74,15 +74,6 @@ func Clamp[N defs.Ordered](x, sub, sup N) N {
 		return sup
 	}
 	return x
-}
-
-// Accumulate
-func Accumulate[T any](initVal T, seq []T, acc defs.BinaryFunc[T, T, T]) T {
-	retval := initVal
-	for _, item := range seq {
-		retval = acc(retval, item)
-	}
-	return retval
 }
 
 // Min
@@ -189,9 +180,9 @@ func ArgMaxFunc[T defs.Ordered](seq []T, larger defs.BinaryPred[T, T]) int {
 	return idx
 }
 
-// Contains
-func Contains[T comparable](s []T, elem T) bool {
-	for _, x := range s {
+// Contains if seq contains elem
+func Contains[T comparable](seq []T, elem T) bool {
+	for _, x := range seq {
 		if x == elem {
 			return true
 		}
@@ -200,8 +191,8 @@ func Contains[T comparable](s []T, elem T) bool {
 }
 
 // ContainsFunc
-func ContainsFunc[T any](s []T, elem T, eq defs.BinaryFunc[T, T, bool]) bool {
-	for _, x := range s {
+func ContainsFunc[T1 any, T2 any](seq []T1, elem T2, eq defs.BinaryPred[T1, T2]) bool {
+	for _, x := range seq {
 		if eq(x, elem) {
 			return true
 		}
@@ -212,13 +203,18 @@ func ContainsFunc[T any](s []T, elem T, eq defs.BinaryFunc[T, T, bool]) bool {
 // Chunk
 func Chunk[T any](s []T, size int) [][]T {
 	retval := make([][]T, 0)
-	for i := 0; i < len(s); i += size {
-		retval = append(retval, s[i:i+size])
+	for start := 0; start < len(s); start += size {
+		end := start + size
+		if end > len(s) {
+			end = len(s)
+		}
+		retval = append(retval, s[start:end])
 	}
 	return retval
 }
 
-func Concat[T any](seqs ...[]T) []T {
+// Concat
+func Concat[T any](seqs [][]T) []T {
 	var c int
 	for _, seq := range seqs {
 		c += len(seq)
@@ -228,6 +224,34 @@ func Concat[T any](seqs ...[]T) []T {
 		retval = append(retval, seq...)
 	}
 	return retval
+}
+
+// NewSet
+func NewSet[T comparable](seq []T) map[T]struct{} {
+	set := make(map[T]struct{})
+	for _, x := range seq {
+		set[x] = struct{}{}
+	}
+	return set
+}
+
+// Difference return the difference between two sequences
+func Difference[T comparable](seq1, seq2 []T) ([]T, []T) {
+	set1 := NewSet(seq1)
+	set2 := NewSet(seq2)
+	diff1 := make([]T, 0)
+	diff2 := make([]T, 0)
+	for _, x := range seq1 {
+		if _, ok := set2[x]; !ok {
+			diff1 = append(diff1, x)
+		}
+	}
+	for _, x := range seq2 {
+		if _, ok := set1[x]; !ok {
+			diff2 = append(diff2, x)
+		}
+	}
+	return diff1, diff2
 }
 
 // Pivot
@@ -257,6 +281,22 @@ func Map[I any, O any](seq []I, f defs.UnaryFunc[I, O]) []O {
 		retval[i] = f(x)
 	}
 	return retval
+}
+
+// Reduce
+func Reduce[T any](seq []T, acc defs.ReduceFunc[T], initVal T) T {
+	retval := initVal
+	for _, item := range seq {
+		retval = acc(retval, item)
+	}
+	return retval
+}
+
+// Reverse reverse seq in place
+func Reverse[T any](seq []T) {
+	for left, right := 0, len(seq)-1; left < right; left, right = left+1, right-1 {
+		seq[left], seq[right] = seq[right], seq[left]
+	}
 }
 
 // GroupBy
@@ -298,4 +338,30 @@ func ToPairs[KeyType comparable, ValueType any](dict map[KeyType]ValueType) []de
 		retval = append(retval, defs.Pair[KeyType, ValueType]{First: k, Second: v})
 	}
 	return retval
+}
+
+// Zip
+func Zip[T1 any, T2 any](seq1 []T1, seq2 []T2) []defs.Pair[T1, T2] {
+	var commonLen int
+	if len(seq1) < len(seq2) {
+		commonLen = len(seq1)
+	} else {
+		commonLen = len(seq2)
+	}
+	retval := make([]defs.Pair[T1, T2], 0, commonLen)
+	for i := 0; i < commonLen; i++ {
+		retval = append(retval, defs.Pair[T1, T2]{First: seq1[i], Second: seq2[i]})
+	}
+	return retval
+}
+
+// Unzip
+func Unzip[T1 any, T2 any](seq []defs.Pair[T1, T2]) ([]T1, []T2) {
+	ret1 := make([]T1, 0, len(seq))
+	ret2 := make([]T2, 0, len(seq))
+	for _, x := range seq {
+		ret1 = append(ret1, x.First)
+		ret2 = append(ret2, x.Second)
+	}
+	return ret1, ret2
 }

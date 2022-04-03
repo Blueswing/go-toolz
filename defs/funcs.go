@@ -18,11 +18,8 @@ type BinaryPred[InType1, InType2 any] BinaryFunc[InType1, InType2, bool]
 // BinaryProc binary procedure
 type BinaryProc[InType1, InType2 any] func(InType1, InType2)
 
+type ReduceFunc[T any] BinaryFunc[T, T, T]
+
 type PivotFunc[InType any, KeyType any, ValueType any] func(InType) (KeyType, ValueType)
 
 type UnpivotFunc[KeyType any, ValueType any, OutType any] func(KeyType, ValueType) OutType
-
-// FuncEqual
-func FuncEqual[T comparable](x, y T) bool {
-	return x == y
-}
