@@ -1,4 +1,4 @@
-module github.com/blueswing/go-toolz
+module github.com/yeefea/go-toolz
 
 go 1.18
 

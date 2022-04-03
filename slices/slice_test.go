@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/blueswing/go-toolz/defs"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/exp/slices"
 )
@@ -40,15 +39,15 @@ func TestProduct(t *testing.T) {
 
 func TestContains(t *testing.T) {
 	nums := []int{1, 2, 3, 4, 5}
-	ok := Contains(nums, 1, defs.Equal[int])
+	ok := Contains(nums, 1)
 	assert.True(t, ok, "expect true")
-	ok = Contains(nums, 0, defs.Equal[int])
+	ok = Contains(nums, 0)
 	assert.False(t, ok, "expect false")
 
 	strs := []string{"aaa", "bbb", "ccc"}
-	ok = Contains(strs, "aaa", defs.Equal[string])
+	ok = Contains(strs, "aaa")
 	assert.True(t, ok, "expect true")
-	ok = Contains(strs, "ddd", defs.Equal[string])
+	ok = Contains(strs, "ddd")
 	assert.False(t, ok, "expect false")
 }
 

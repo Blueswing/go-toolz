@@ -1,8 +1,48 @@
 package slices
 
 import (
-	"github.com/blueswing/go-toolz/defs"
+	"github.com/yeefea/go-toolz/defs"
 )
+
+// All
+func All(seq ...bool) bool {
+	for _, x := range seq {
+		if !x {
+			return false
+		}
+	}
+	return true
+}
+
+// AllFunc
+func AllFunc[T any](pred defs.UnaryPred[T], seq ...T) bool {
+	for _, x := range seq {
+		if !pred(x) {
+			return false
+		}
+	}
+	return true
+}
+
+// Any
+func Any(seq ...bool) bool {
+	for _, x := range seq {
+		if x {
+			return true
+		}
+	}
+	return false
+}
+
+// AnyFunc
+func AnyFunc[T any](pred defs.UnaryPred[T], seq ...T) bool {
+	for _, x := range seq {
+		if pred(x) {
+			return true
+		}
+	}
+	return false
+}
 
 // Sum returns the sum of given numbers
 func Sum[T defs.Numeric](seq []T) T {
@@ -67,6 +107,36 @@ func MinFunc[T any](seq []T, less defs.BinaryPred[T, T]) T {
 	return ret
 }
 
+// ArgMin
+func ArgMin[T defs.Ordered](seq []T) int {
+	idx := -1
+	if len(seq) > 0 {
+		min := seq[0]
+		for i := 1; i < len(seq); i++ {
+			if seq[i] < min {
+				min = seq[i]
+				idx = i
+			}
+		}
+	}
+	return idx
+}
+
+// ArgMinFunc
+func ArgMinFunc[T defs.Ordered](seq []T, less defs.BinaryPred[T, T]) int {
+	idx := -1
+	if len(seq) > 0 {
+		min := seq[0]
+		for i := 1; i < len(seq); i++ {
+			if less(seq[i], min) {
+				min = seq[i]
+				idx = i
+			}
+		}
+	}
+	return idx
+}
+
 // Max
 func Max[T defs.Ordered](seq []T) T {
 	ret := seq[0]
@@ -89,8 +159,48 @@ func MaxFunc[T any](seq []T, larger defs.BinaryPred[T, T]) T {
 	return ret
 }
 
+// ArgMax
+func ArgMax[T defs.Ordered](seq []T) int {
+	idx := -1
+	if len(seq) > 0 {
+		max := seq[0]
+		for i := 1; i < len(seq); i++ {
+			if seq[i] > max {
+				max = seq[i]
+				idx = i
+			}
+		}
+	}
+	return idx
+}
+
+// ArgMaxFunc
+func ArgMaxFunc[T defs.Ordered](seq []T, larger defs.BinaryPred[T, T]) int {
+	idx := -1
+	if len(seq) > 0 {
+		min := seq[0]
+		for i := 1; i < len(seq); i++ {
+			if larger(seq[i], min) {
+				min = seq[i]
+				idx = i
+			}
+		}
+	}
+	return idx
+}
+
 // Contains
-func Contains[T any](s []T, elem T, eq defs.BinaryFunc[T, T, bool]) bool {
+func Contains[T comparable](s []T, elem T) bool {
+	for _, x := range s {
+		if x == elem {
+			return true
+		}
+	}
+	return false
+}
+
+// ContainsFunc
+func ContainsFunc[T any](s []T, elem T, eq defs.BinaryFunc[T, T, bool]) bool {
 	for _, x := range s {
 		if eq(x, elem) {
 			return true
@@ -99,6 +209,7 @@ func Contains[T any](s []T, elem T, eq defs.BinaryFunc[T, T, bool]) bool {
 	return false
 }
 
+// Chunk
 func Chunk[T any](s []T, size int) [][]T {
 	retval := make([][]T, 0)
 	for i := 0; i < len(s); i += size {
@@ -108,7 +219,11 @@ func Chunk[T any](s []T, size int) [][]T {
 }
 
 func Concat[T any](seqs ...[]T) []T {
-	retval := make([]T, 0)
+	var c int
+	for _, seq := range seqs {
+		c += len(seq)
+	}
+	retval := make([]T, 0, c)
 	for _, seq := range seqs {
 		retval = append(retval, seq...)
 	}
@@ -163,6 +278,24 @@ func Join[T1 any, T2 any](seq1 []T1, seq2 []T2, eq defs.BinaryPred[T1, T2]) []de
 				retval = append(retval, defs.Pair[T1, T2]{First: x, Second: y})
 			}
 		}
+	}
+	return retval
+}
+
+// FromPairs
+func FromPairs[KeyType comparable, ValueType any](pairs []defs.Pair[KeyType, ValueType]) map[KeyType]ValueType {
+	retval := make(map[KeyType]ValueType)
+	for _, p := range pairs {
+		retval[p.First] = p.Second
+	}
+	return retval
+}
+
+// ToPairs
+func ToPairs[KeyType comparable, ValueType any](dict map[KeyType]ValueType) []defs.Pair[KeyType, ValueType] {
+	retval := make([]defs.Pair[KeyType, ValueType], 0, len(dict))
+	for k, v := range dict {
+		retval = append(retval, defs.Pair[KeyType, ValueType]{First: k, Second: v})
 	}
 	return retval
 }
