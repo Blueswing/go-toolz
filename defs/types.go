@@ -1,13 +1,17 @@
 package defs
 
-import "golang.org/x/exp/constraints"
-
+// Signed signed integer
 type Signed interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64
 }
 
+// Unsigned unsigned integer
 type Unsigned interface {
-	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64
+	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
+}
+
+type Integer interface {
+	Signed | Unsigned
 }
 
 type Float interface {
@@ -26,7 +30,9 @@ type OrderedNumeric interface {
 	Signed | Unsigned | Float
 }
 
-type Ordered constraints.Ordered
+type Ordered interface {
+	Integer | Float | ~string
+}
 
 type Pair[T1 any, T2 any] struct {
 	First  T1

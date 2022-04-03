@@ -2,21 +2,20 @@ package slices
 
 import (
 	"github.com/blueswing/go-toolz/defs"
-	"golang.org/x/exp/constraints"
 )
 
-// Sum
-func Sum[T defs.Numeric](initVal T, seq []T) T {
-	retval := initVal
+// Sum returns the sum of given numbers
+func Sum[T defs.Numeric](seq []T) T {
+	var retval T
 	for _, x := range seq {
 		retval += x
 	}
 	return retval
 }
 
-// Product
-func Product[T defs.Numeric](initVal T, seq []T) T {
-	retval := initVal
+// Product returns the product of given numbers
+func Product[T defs.Numeric](seq []T) T {
+	var retval T = 1
 	for _, x := range seq {
 		retval *= x
 	}
@@ -46,6 +45,50 @@ func Accumulate[T any](initVal T, seq []T, acc defs.BinaryFunc[T, T, T]) T {
 	return retval
 }
 
+// Min
+func Min[T defs.Ordered](seq []T) T {
+	ret := seq[0]
+	for i := 1; i < len(seq); i++ {
+		if seq[i] < ret {
+			ret = seq[i]
+		}
+	}
+	return ret
+}
+
+// MinFunc
+func MinFunc[T any](seq []T, less defs.BinaryPred[T, T]) T {
+	ret := seq[0]
+	for i := 1; i < len(seq); i++ {
+		if less(seq[i], ret) {
+			ret = seq[i]
+		}
+	}
+	return ret
+}
+
+// Max
+func Max[T defs.Ordered](seq []T) T {
+	ret := seq[0]
+	for i := 1; i < len(seq); i++ {
+		if seq[i] > ret {
+			ret = seq[i]
+		}
+	}
+	return ret
+}
+
+// MaxFunc
+func MaxFunc[T any](seq []T, larger defs.BinaryPred[T, T]) T {
+	ret := seq[0]
+	for i := 1; i < len(seq); i++ {
+		if larger(seq[i], ret) {
+			ret = seq[i]
+		}
+	}
+	return ret
+}
+
 // Contains
 func Contains[T any](s []T, elem T, eq defs.BinaryFunc[T, T, bool]) bool {
 	for _, x := range s {
@@ -73,7 +116,7 @@ func Concat[T any](seqs ...[]T) []T {
 }
 
 // Pivot
-func Pivot[T any, K comparable, O any](seq []T, f func(T) (K, O)) map[K]O {
+func Pivot[T any, K comparable, O any](seq []T, f defs.PivotFunc[T, K, O]) map[K]O {
 	retval := make(map[K]O)
 	for _, x := range seq {
 		key, out := f(x)
@@ -83,7 +126,7 @@ func Pivot[T any, K comparable, O any](seq []T, f func(T) (K, O)) map[K]O {
 }
 
 // Unpivot
-func Unpivot[K comparable, V any, O any](dict map[K]V, f func(K, V) O) []O {
+func Unpivot[K comparable, V any, O any](dict map[K]V, f defs.UnpivotFunc[K, V, O]) []O {
 	retval := make([]O, 0, len(dict))
 	for k, v := range dict {
 		x := f(k, v)
@@ -111,17 +154,8 @@ func GroupBy[T any, K comparable](seq []T, f defs.UnaryFunc[T, K]) map[K][]T {
 	return retval
 }
 
-func ZClamp[T constraints.Ordered](max, min, val T) T {
-	if val > max {
-		return max
-	}
-	if val < min {
-		return min
-	}
-	return val
-}
-
-func Join[T1 any, T2 any](seq1 []T1, seq2 []T2, eq defs.BinaryPredicate[T1, T2]) []defs.Pair[T1, T2] {
+// Join
+func Join[T1 any, T2 any](seq1 []T1, seq2 []T2, eq defs.BinaryPred[T1, T2]) []defs.Pair[T1, T2] {
 	retval := make([]defs.Pair[T1, T2], 0)
 	for _, x := range seq1 {
 		for _, y := range seq2 {

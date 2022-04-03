@@ -10,18 +10,45 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+func TestSum(t *testing.T) {
+	ints := []int{1, 2, 3, 4, 5}
+	intRes := Sum(ints)
+	assert.Equal(t, 15, intRes)
+
+	ptrs := []uintptr{1, 2, 3, 4, 5}
+	ptrRes := Sum(ptrs)
+	assert.Equal(t, uintptr(15), ptrRes)
+
+	floats := []float64{1.1, 1.2, 1.3, 1.4, 1.5}
+	floatRes := Sum(floats)
+	assert.InDelta(t, 6.5, floatRes, 1e-16)
+
+	comps := []complex128{1 + 2i, 3 + 4i, 5 + 6i}
+	compRes := Sum(comps)
+	assert.Equal(t, 9+12i, compRes)
+}
+
+func TestProduct(t *testing.T) {
+	ints := []int{1, 2, 3, 4, 5}
+	intRes := Product(ints)
+	assert.Equal(t, 120, intRes)
+
+	comps := []complex128{1 + 2i, 3 + 4i, 5 + 6i}
+	compRes := Product(comps)
+	assert.Equal(t, -85+20i, compRes)
+}
+
 func TestContains(t *testing.T) {
 	nums := []int{1, 2, 3, 4, 5}
-
-	ok := Contains(nums, 1, defs.ZEqual[int])
+	ok := Contains(nums, 1, defs.Equal[int])
 	assert.True(t, ok, "expect true")
-	ok = Contains(nums, 0, defs.ZEqual[int])
+	ok = Contains(nums, 0, defs.Equal[int])
 	assert.False(t, ok, "expect false")
 
 	strs := []string{"aaa", "bbb", "ccc"}
-	ok = Contains(strs, "aaa", defs.ZEqual[string])
+	ok = Contains(strs, "aaa", defs.Equal[string])
 	assert.True(t, ok, "expect true")
-	ok = Contains(strs, "ddd", defs.ZEqual[string])
+	ok = Contains(strs, "ddd", defs.Equal[string])
 	assert.False(t, ok, "expect false")
 }
 
