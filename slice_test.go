@@ -58,12 +58,27 @@ func TestSum(t *testing.T) {
 	comps := []complex128{1 + 2i, 3 + 4i, 5 + 6i}
 	compRes := Sum(comps)
 	assert.Equal(t, 9+12i, compRes)
+
+	ptrRes = Sum([]uintptr{})
+	assert.Equal(t, uintptr(0), ptrRes)
 }
 
 func TestProduct(t *testing.T) {
 	ints := []int{1, 2, 3, 4, 5}
 	intRes := Product(ints)
 	assert.Equal(t, 120, intRes)
+
+	uints := []uint{1, 2, 3, 4, 5}
+	uintRes := Product(uints)
+	assert.Equal(t, uint(120), uintRes)
+
+	ptrs := []uintptr{1, 2, 3, 4, 5}
+	ptrRes := Product(ptrs)
+	assert.Equal(t, uintptr(120), ptrRes)
+
+	floats := []float64{1.0, 2.0, 3.0, 4.0, 5.0}
+	floatRes := Product(floats)
+	assert.InDelta(t, float64(120.0), floatRes, 1e-16)
 
 	comps := []complex128{1 + 2i, 3 + 4i, 5 + 6i}
 	compRes := Product(comps)
@@ -73,15 +88,33 @@ func TestProduct(t *testing.T) {
 func TestContains(t *testing.T) {
 	nums := []int{1, 2, 3, 4, 5}
 	ok := Contains(nums, 1)
-	assert.True(t, ok, "expect true")
+	assert.True(t, ok)
 	ok = Contains(nums, 0)
-	assert.False(t, ok, "expect false")
+	assert.False(t, ok)
+
+	uints := []uint{1, 2, 3, 4, 5}
+	ok = Contains(uints, uint(1))
+	assert.True(t, ok)
+	ok = Contains(uints, uint(0))
+	assert.True(t, false)
+
+	floats := []float64{1.0, 2.0, 3.0, 4.0, 5.0}
+	ok = Contains(floats, 1.0)
+	assert.True(t, ok)
+	ok = Contains(uints, uint(0))
+	assert.False(t, ok)
+
+	comps := []complex128{1 + 2i, 3 + 4i, 5 + 6i}
+	ok = Contains(comps, 1+2i)
+	assert.True(t, ok)
+	ok = Contains(comps, 2+1i)
+	assert.False(t, ok)
 
 	strs := []string{"aaa", "bbb", "ccc"}
 	ok = Contains(strs, "aaa")
-	assert.True(t, ok, "expect true")
+	assert.True(t, ok)
 	ok = Contains(strs, "ddd")
-	assert.False(t, ok, "expect false")
+	assert.False(t, ok)
 }
 
 func TestReduce(t *testing.T) {

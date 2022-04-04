@@ -23,11 +23,11 @@ type Complex interface {
 }
 
 type Numeric interface {
-	Signed | Unsigned | Float | Complex
+	Integer | Float | Complex
 }
 
 type OrderedNumeric interface {
-	Signed | Unsigned | Float
+	Integer | Float
 }
 
 type Ordered interface {
