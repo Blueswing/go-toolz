@@ -1,7 +1,7 @@
 # go-toolz
-`go-toolz` is a functional library written in Go inspired by [PyToolz](https://github.com/pytoolz/toolz). 
+`go-toolz` is a functional library written in Go.
 
-This library is implemented using the generic features of Go 1.18 and above.
+This library is inspired by [PyToolz](https://github.com/pytoolz/toolz) and it is implemented using the generic features of Go 1.18 and above.
 
 ## Requirements
 
