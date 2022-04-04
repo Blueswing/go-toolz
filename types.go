@@ -1,4 +1,4 @@
-package defs
+package toolz
 
 // Signed signed integer
 type Signed interface {

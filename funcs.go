@@ -1,4 +1,4 @@
-package defs
+package toolz
 
 // UnaryFunc unary function
 type UnaryFunc[InType any, OutType any] func(InType) OutType

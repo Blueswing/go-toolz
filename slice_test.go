@@ -1,4 +1,4 @@
-package slices
+package toolz
 
 import (
 	"fmt"

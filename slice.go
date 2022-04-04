@@ -1,8 +1,4 @@
-package slices
-
-import (
-	"github.com/yeefea/go-toolz/defs"
-)
+package toolz
 
 // All returns true if all elements in seq are true or if seq is empty
 func All(seq ...bool) bool {
@@ -15,7 +11,7 @@ func All(seq ...bool) bool {
 }
 
 // AllPredicates returns true if all predicates in preds true or if preds is empty
-func AllPredicates[T any](val T, preds ...defs.UnaryPred[T]) bool {
+func AllPredicates[T any](val T, preds ...UnaryPred[T]) bool {
 	for _, f := range preds {
 		if !f(val) {
 			return false
@@ -35,7 +31,7 @@ func Any(seq ...bool) bool {
 }
 
 // AnyFunc returns false if all predicates in preds returns false or if preds is empty
-func AnyPredicates[T any](val T, preds ...defs.UnaryPred[T]) bool {
+func AnyPredicates[T any](val T, preds ...UnaryPred[T]) bool {
 	for _, f := range preds {
 		if f(val) {
 			return true
@@ -45,7 +41,7 @@ func AnyPredicates[T any](val T, preds ...defs.UnaryPred[T]) bool {
 }
 
 // Sum returns the sum of given numbers
-func Sum[T defs.Numeric](seq []T) T {
+func Sum[T Numeric](seq []T) T {
 	var retval T
 	for _, x := range seq {
 		retval += x
@@ -54,7 +50,7 @@ func Sum[T defs.Numeric](seq []T) T {
 }
 
 // Product returns the product of given numbers
-func Product[T defs.Numeric](seq []T) T {
+func Product[T Numeric](seq []T) T {
 	var retval T = 1
 	for _, x := range seq {
 		retval *= x
@@ -62,11 +58,11 @@ func Product[T defs.Numeric](seq []T) T {
 	return retval
 }
 
-func Between[N defs.Ordered](x, sub, sup N) bool {
+func Between[N Ordered](x, sub, sup N) bool {
 	return x >= sub && x <= sup
 }
 
-func Clamp[N defs.Ordered](x, sub, sup N) N {
+func Clamp[N Ordered](x, sub, sup N) N {
 	if x < sub {
 		return sub
 	}
@@ -77,7 +73,7 @@ func Clamp[N defs.Ordered](x, sub, sup N) N {
 }
 
 // Min
-func Min[T defs.Ordered](seq []T) T {
+func Min[T Ordered](seq []T) T {
 	ret := seq[0]
 	for i := 1; i < len(seq); i++ {
 		if seq[i] < ret {
@@ -88,7 +84,7 @@ func Min[T defs.Ordered](seq []T) T {
 }
 
 // MinFunc
-func MinFunc[T any](seq []T, less defs.BinaryPred[T, T]) T {
+func MinFunc[T any](seq []T, less BinaryPred[T, T]) T {
 	ret := seq[0]
 	for i := 1; i < len(seq); i++ {
 		if less(seq[i], ret) {
@@ -99,7 +95,7 @@ func MinFunc[T any](seq []T, less defs.BinaryPred[T, T]) T {
 }
 
 // ArgMin
-func ArgMin[T defs.Ordered](seq []T) int {
+func ArgMin[T Ordered](seq []T) int {
 	idx := -1
 	if len(seq) > 0 {
 		min := seq[0]
@@ -114,7 +110,7 @@ func ArgMin[T defs.Ordered](seq []T) int {
 }
 
 // ArgMinFunc
-func ArgMinFunc[T defs.Ordered](seq []T, less defs.BinaryPred[T, T]) int {
+func ArgMinFunc[T Ordered](seq []T, less BinaryPred[T, T]) int {
 	idx := -1
 	if len(seq) > 0 {
 		min := seq[0]
@@ -129,7 +125,7 @@ func ArgMinFunc[T defs.Ordered](seq []T, less defs.BinaryPred[T, T]) int {
 }
 
 // Max
-func Max[T defs.Ordered](seq []T) T {
+func Max[T Ordered](seq []T) T {
 	ret := seq[0]
 	for i := 1; i < len(seq); i++ {
 		if seq[i] > ret {
@@ -140,7 +136,7 @@ func Max[T defs.Ordered](seq []T) T {
 }
 
 // MaxFunc
-func MaxFunc[T any](seq []T, larger defs.BinaryPred[T, T]) T {
+func MaxFunc[T any](seq []T, larger BinaryPred[T, T]) T {
 	ret := seq[0]
 	for i := 1; i < len(seq); i++ {
 		if larger(seq[i], ret) {
@@ -151,7 +147,7 @@ func MaxFunc[T any](seq []T, larger defs.BinaryPred[T, T]) T {
 }
 
 // ArgMax
-func ArgMax[T defs.Ordered](seq []T) int {
+func ArgMax[T Ordered](seq []T) int {
 	idx := -1
 	if len(seq) > 0 {
 		max := seq[0]
@@ -166,7 +162,7 @@ func ArgMax[T defs.Ordered](seq []T) int {
 }
 
 // ArgMaxFunc
-func ArgMaxFunc[T defs.Ordered](seq []T, larger defs.BinaryPred[T, T]) int {
+func ArgMaxFunc[T Ordered](seq []T, larger BinaryPred[T, T]) int {
 	idx := -1
 	if len(seq) > 0 {
 		min := seq[0]
@@ -217,7 +213,7 @@ func Contains[T comparable](seq []T, elem T) bool {
 }
 
 // ContainsFunc
-func ContainsFunc[T any](seq []T, pred defs.UnaryPred[T]) bool {
+func ContainsFunc[T any](seq []T, pred UnaryPred[T]) bool {
 	for _, x := range seq {
 		if pred(x) {
 			return true
@@ -238,7 +234,7 @@ func Count[T comparable](seq []T, val T) int {
 }
 
 // CountFunc
-func CountFunc[T any](seq []T, pred defs.UnaryPred[T]) int {
+func CountFunc[T any](seq []T, pred UnaryPred[T]) int {
 	cnt := 0
 	for _, x := range seq {
 		if pred(x) {
@@ -299,7 +295,7 @@ func Equal[T comparable](s1, s2 []T) bool {
 }
 
 // EqualFunc
-func EqualFunc[T1 any, T2 any](s1 []T1, s2 []T2, eq defs.BinaryPred[T1, T2]) bool {
+func EqualFunc[T1 any, T2 any](s1 []T1, s2 []T2, eq BinaryPred[T1, T2]) bool {
 	if len(s1) != len(s2) {
 		return false
 	}
@@ -313,7 +309,7 @@ func EqualFunc[T1 any, T2 any](s1 []T1, s2 []T2, eq defs.BinaryPred[T1, T2]) boo
 }
 
 // Filter
-func Filter[T any](seq []T, pred defs.UnaryPred[T]) []T {
+func Filter[T any](seq []T, pred UnaryPred[T]) []T {
 	retval := make([]T, 0)
 	for _, x := range seq {
 		if pred(x) {
@@ -324,7 +320,7 @@ func Filter[T any](seq []T, pred defs.UnaryPred[T]) []T {
 }
 
 // Find
-func Find[T any](seq []T, pred defs.UnaryPred[T]) (T, bool) {
+func Find[T any](seq []T, pred UnaryPred[T]) (T, bool) {
 	for _, x := range seq {
 		if pred(x) {
 			return x, true
@@ -347,7 +343,7 @@ func Index[T comparable](seq []T, val T) int {
 }
 
 // IndexFunc
-func IndexFunc[T any](seq []T, pred defs.UnaryPred[T]) int {
+func IndexFunc[T any](seq []T, pred UnaryPred[T]) int {
 	idx := -1
 	for i, x := range seq {
 		if pred(x) {
@@ -359,7 +355,7 @@ func IndexFunc[T any](seq []T, pred defs.UnaryPred[T]) int {
 }
 
 // Pivot
-func Pivot[T any, K comparable, O any](seq []T, f defs.PivotFunc[T, K, O]) map[K]O {
+func Pivot[T any, K comparable, O any](seq []T, f PivotFunc[T, K, O]) map[K]O {
 	retval := make(map[K]O)
 	for _, x := range seq {
 		key, out := f(x)
@@ -369,7 +365,7 @@ func Pivot[T any, K comparable, O any](seq []T, f defs.PivotFunc[T, K, O]) map[K
 }
 
 // Unpivot
-func Unpivot[K comparable, V any, O any](dict map[K]V, f defs.UnpivotFunc[K, V, O]) []O {
+func Unpivot[K comparable, V any, O any](dict map[K]V, f UnpivotFunc[K, V, O]) []O {
 	retval := make([]O, 0, len(dict))
 	for k, v := range dict {
 		x := f(k, v)
@@ -379,7 +375,7 @@ func Unpivot[K comparable, V any, O any](dict map[K]V, f defs.UnpivotFunc[K, V, 
 }
 
 // Map
-func Map[I any, O any](seq []I, f defs.UnaryFunc[I, O]) []O {
+func Map[I any, O any](seq []I, f UnaryFunc[I, O]) []O {
 	retval := make([]O, len(seq))
 	for i, x := range seq {
 		retval[i] = f(x)
@@ -388,7 +384,7 @@ func Map[I any, O any](seq []I, f defs.UnaryFunc[I, O]) []O {
 }
 
 // Reduce
-func Reduce[T any](seq []T, acc defs.ReduceFunc[T], initVal T) T {
+func Reduce[T any](seq []T, acc ReduceFunc[T], initVal T) T {
 	retval := initVal
 	for _, item := range seq {
 		retval = acc(retval, item)
@@ -404,7 +400,7 @@ func Reverse[T any](seq []T) {
 }
 
 // GroupBy
-func GroupBy[T any, K comparable](seq []T, f defs.UnaryFunc[T, K]) map[K][]T {
+func GroupBy[T any, K comparable](seq []T, f UnaryFunc[T, K]) map[K][]T {
 	retval := make(map[K][]T)
 	for _, x := range seq {
 		key := f(x)
@@ -414,12 +410,12 @@ func GroupBy[T any, K comparable](seq []T, f defs.UnaryFunc[T, K]) map[K][]T {
 }
 
 // Join
-func Join[T1 any, T2 any](seq1 []T1, seq2 []T2, eq defs.BinaryPred[T1, T2]) []defs.Pair[T1, T2] {
-	retval := make([]defs.Pair[T1, T2], 0)
+func Join[T1 any, T2 any](seq1 []T1, seq2 []T2, eq BinaryPred[T1, T2]) []Pair[T1, T2] {
+	retval := make([]Pair[T1, T2], 0)
 	for _, x := range seq1 {
 		for _, y := range seq2 {
 			if eq(x, y) {
-				retval = append(retval, defs.Pair[T1, T2]{First: x, Second: y})
+				retval = append(retval, Pair[T1, T2]{First: x, Second: y})
 			}
 		}
 	}
@@ -427,7 +423,7 @@ func Join[T1 any, T2 any](seq1 []T1, seq2 []T2, eq defs.BinaryPred[T1, T2]) []de
 }
 
 // FromPairs
-func FromPairs[KeyType comparable, ValueType any](pairs []defs.Pair[KeyType, ValueType]) map[KeyType]ValueType {
+func FromPairs[KeyType comparable, ValueType any](pairs []Pair[KeyType, ValueType]) map[KeyType]ValueType {
 	retval := make(map[KeyType]ValueType)
 	for _, p := range pairs {
 		retval[p.First] = p.Second
@@ -436,31 +432,31 @@ func FromPairs[KeyType comparable, ValueType any](pairs []defs.Pair[KeyType, Val
 }
 
 // ToPairs
-func ToPairs[KeyType comparable, ValueType any](dict map[KeyType]ValueType) []defs.Pair[KeyType, ValueType] {
-	retval := make([]defs.Pair[KeyType, ValueType], 0, len(dict))
+func ToPairs[KeyType comparable, ValueType any](dict map[KeyType]ValueType) []Pair[KeyType, ValueType] {
+	retval := make([]Pair[KeyType, ValueType], 0, len(dict))
 	for k, v := range dict {
-		retval = append(retval, defs.Pair[KeyType, ValueType]{First: k, Second: v})
+		retval = append(retval, Pair[KeyType, ValueType]{First: k, Second: v})
 	}
 	return retval
 }
 
 // Zip
-func Zip[T1 any, T2 any](seq1 []T1, seq2 []T2) []defs.Pair[T1, T2] {
+func Zip[T1 any, T2 any](seq1 []T1, seq2 []T2) []Pair[T1, T2] {
 	var commonLen int
 	if len(seq1) < len(seq2) {
 		commonLen = len(seq1)
 	} else {
 		commonLen = len(seq2)
 	}
-	retval := make([]defs.Pair[T1, T2], 0, commonLen)
+	retval := make([]Pair[T1, T2], 0, commonLen)
 	for i := 0; i < commonLen; i++ {
-		retval = append(retval, defs.Pair[T1, T2]{First: seq1[i], Second: seq2[i]})
+		retval = append(retval, Pair[T1, T2]{First: seq1[i], Second: seq2[i]})
 	}
 	return retval
 }
 
 // Unzip
-func Unzip[T1 any, T2 any](seq []defs.Pair[T1, T2]) ([]T1, []T2) {
+func Unzip[T1 any, T2 any](seq []Pair[T1, T2]) ([]T1, []T2) {
 	ret1 := make([]T1, 0, len(seq))
 	ret2 := make([]T2, 0, len(seq))
 	for _, x := range seq {
