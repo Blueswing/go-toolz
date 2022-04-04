@@ -93,14 +93,14 @@ func TestReduce(t *testing.T) {
 func TestMap(t *testing.T) {
 	s := []int{1, 2, 3, 4, 5}
 	exp := []string{"1", "2", "3", "4", "5"}
-	res := Map[int, string](s, func(i int) string { return strconv.Itoa(i) })
+	res := Map(s, func(i int) string { return strconv.Itoa(i) })
 	ans := slices.EqualFunc(res, exp, func(x, y string) bool { return x == y })
 	assert.True(t, ans)
 }
 
 func TestGroupBy(t *testing.T) {
 	s := []int{1, 2, 3, 4, 5, 6, 7, 8}
-	res := GroupBy[int, int](s, func(x int) int { return x % 2 })
+	res := GroupBy(s, func(x int) int { return x % 2 })
 	fmt.Println(res)
 }
 

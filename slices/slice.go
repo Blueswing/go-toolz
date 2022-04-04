@@ -180,26 +180,6 @@ func ArgMaxFunc[T defs.Ordered](seq []T, larger defs.BinaryPred[T, T]) int {
 	return idx
 }
 
-// Contains if seq contains elem
-func Contains[T comparable](seq []T, elem T) bool {
-	for _, x := range seq {
-		if x == elem {
-			return true
-		}
-	}
-	return false
-}
-
-// ContainsFunc
-func ContainsFunc[T1 any, T2 any](seq []T1, elem T2, eq defs.BinaryPred[T1, T2]) bool {
-	for _, x := range seq {
-		if eq(x, elem) {
-			return true
-		}
-	}
-	return false
-}
-
 // Chunk
 func Chunk[T any](s []T, size int) [][]T {
 	retval := make([][]T, 0)
@@ -222,6 +202,57 @@ func Concat[T any](seqs [][]T) []T {
 	retval := make([]T, 0, c)
 	for _, seq := range seqs {
 		retval = append(retval, seq...)
+	}
+	return retval
+}
+
+// Contains if seq contains elem
+func Contains[T comparable](seq []T, elem T) bool {
+	for _, x := range seq {
+		if x == elem {
+			return true
+		}
+	}
+	return false
+}
+
+// ContainsFunc
+func ContainsFunc[T any](seq []T, pred defs.UnaryPred[T]) bool {
+	for _, x := range seq {
+		if pred(x) {
+			return true
+		}
+	}
+	return false
+}
+
+// Count
+func Count[T comparable](seq []T, val T) int {
+	cnt := 0
+	for _, x := range seq {
+		if x == val {
+			cnt++
+		}
+	}
+	return cnt
+}
+
+// CountFunc
+func CountFunc[T any](seq []T, pred defs.UnaryPred[T]) int {
+	cnt := 0
+	for _, x := range seq {
+		if pred(x) {
+			cnt++
+		}
+	}
+	return cnt
+}
+
+// Counter
+func Counter[T comparable](seq []T) map[T]int {
+	retval := make(map[T]int)
+	for _, x := range seq {
+		retval[x] += 1
 	}
 	return retval
 }
@@ -252,6 +283,79 @@ func Difference[T comparable](seq1, seq2 []T) ([]T, []T) {
 		}
 	}
 	return diff1, diff2
+}
+
+// Equal
+func Equal[T comparable](s1, s2 []T) bool {
+	if len(s1) != len(s2) {
+		return false
+	}
+	for i := range s1 {
+		if s1[i] != s2[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// EqualFunc
+func EqualFunc[T1 any, T2 any](s1 []T1, s2 []T2, eq defs.BinaryPred[T1, T2]) bool {
+	if len(s1) != len(s2) {
+		return false
+	}
+	for i, v1 := range s1 {
+		v2 := s2[i]
+		if !eq(v1, v2) {
+			return false
+		}
+	}
+	return true
+}
+
+// Filter
+func Filter[T any](seq []T, pred defs.UnaryPred[T]) []T {
+	retval := make([]T, 0)
+	for _, x := range seq {
+		if pred(x) {
+			retval = append(retval, x)
+		}
+	}
+	return retval
+}
+
+// Find
+func Find[T any](seq []T, pred defs.UnaryPred[T]) (T, bool) {
+	for _, x := range seq {
+		if pred(x) {
+			return x, true
+		}
+	}
+	var retval T
+	return retval, false
+}
+
+// Index
+func Index[T comparable](seq []T, val T) int {
+	idx := -1
+	for i, x := range seq {
+		if x == val {
+			idx = i
+			break
+		}
+	}
+	return idx
+}
+
+// IndexFunc
+func IndexFunc[T any](seq []T, pred defs.UnaryPred[T]) int {
+	idx := -1
+	for i, x := range seq {
+		if pred(x) {
+			idx = i
+			break
+		}
+	}
+	return idx
 }
 
 // Pivot
